@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "GuitarTeacher",
-    "slug": "GuitarTeacher",
-    "version": "1.0.0",
+    "name": "NoteSchool",
+    "slug": "NoteSchool",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "guitarteacher",
+    "scheme": "noteschool",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
