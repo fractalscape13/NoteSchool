@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.josephwangemann.NoteSchool'
+    namespace 'com.app.noteschool'
     defaultConfig {
-        applicationId 'com.josephwangemann.NoteSchool'
+        applicationId 'com.app.noteschool'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

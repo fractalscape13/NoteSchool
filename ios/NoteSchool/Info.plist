@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>noteschool</string>
-          <string>com.josephwangemann.NoteSchool</string>
+          <string>com.app.noteschool</string>
         </array>
       </dict>
     </array>
