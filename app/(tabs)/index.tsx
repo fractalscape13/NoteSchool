@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { storage, STORAGE_KEYS } from "../../src/constants/storage";
 import { colors } from "../../src/constants/theme";
 import { Note, notes } from "../../src/utils/notes";
 
@@ -8,7 +9,10 @@ const NotesScreen = () => {
   const insets = useSafeAreaInsets();
   const [includeAccidentals, setIncludeAccidentals] = useState<boolean>(false);
   const [currentNote, setCurrentNote] = useState<Note>(notes[0]);
-  const [intervalTime, setIntervalTime] = useState<number>(2);
+  const [intervalTime, setIntervalTime] = useState<number>(() => {
+    const savedInterval = storage.getNumber(STORAGE_KEYS.INTERVAL_TIME);
+    return savedInterval ?? 2;
+  });
   const [isRunning, setIsRunning] = useState<boolean>(true);
   const [currentSecond, setCurrentSecond] = useState<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -70,6 +74,10 @@ const NotesScreen = () => {
       stopTimer();
     }
   }, [intervalTime, includeAccidentals]);
+
+  useEffect(() => {
+    storage.set(STORAGE_KEYS.INTERVAL_TIME, intervalTime);
+  }, [intervalTime]);
 
   const renderDotIndicators = () => {
     const dots = [];
@@ -159,7 +167,6 @@ const NotesScreen = () => {
               {isRunning ? "Stop" : "Start"}
             </Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={[
               styles.controlButton,
