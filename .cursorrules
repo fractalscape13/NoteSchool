@@ -1,0 +1,36 @@
+# GuitarTeacher Project Rules
+
+## Core Principles
+- Follow Expo and React Native best practices
+- Always use TypeScript
+- Keep solutions simple and maintainable
+- Write clean, readable code over clever code
+
+## Code Quality
+- Use functional components with hooks
+- Use arrow functions
+- Implement proper TypeScript types for all props and state
+- Follow React Native's performance best practices
+- Ignore linter issues unrelated to the current task
+- Use proper naming conventions (camelCase for variables/functions, PascalCase for components)
+- Remove empty lines and keep code condensed for better readability
+- Comments only for complex logic and non-obvious decisions
+- Group code elements (imports, enums, etc.) logically first, then alphabetically
+
+## Problem Solving
+- When encountering a "hacky" solution, step back and reassess using first principles
+- Ask for clarification before implementing non-obvious solutions
+- Consider edge cases and error scenarios
+- Document technical decisions and their rationale
+
+## Folder Structure
+- `/app` - Expo Router app directory for routing and screens
+  - `/(tabs)` - Tab-based navigation screens
+  - `_layout.tsx` - Root layout configuration
+- `/src` - Source code directory
+  - `/constants` - App-wide constants and configuration
+  - `/utils` - Helper functions and utilities
+- `/assets` - Static assets (images, fonts, etc.)
+- `/ios` - iOS native code
+- `/android` - Android native code
+- Root configuration files (app.json, package.json, tsconfig.json, etc.)
