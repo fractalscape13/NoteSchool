@@ -11,10 +11,9 @@
 - Use arrow functions
 - Implement proper TypeScript types for all props and state
 - Follow React Native's performance best practices
-- Ignore linter issues unrelated to the current task
 - Use proper naming conventions (camelCase for variables/functions, PascalCase for components)
 - Remove empty lines and keep code condensed for better readability
-- Comments only for complex logic and non-obvious decisions
+- Comments only allowed for complex logic and non-obvious decisions
 - Group code elements (imports, enums, etc.) logically first, then alphabetically
 
 ## Problem Solving
@@ -22,6 +21,7 @@
 - Ask for clarification before implementing non-obvious solutions
 - Consider edge cases and error scenarios
 - Document technical decisions and their rationale
+- Ignore linter issues unrelated to the current task
 
 ## Folder Structure
 - `/app` - Expo Router app directory for routing and screens
