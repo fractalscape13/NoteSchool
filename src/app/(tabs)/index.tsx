@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OptionsModal } from "../../components/OptionsModal";
 import { storage, STORAGE_KEYS } from "../../constants/storage";
@@ -82,9 +82,11 @@ const MixedScreen = () => {
   }, [selectedChordIndex]);
 
   return (
-    <View
-      style={[
-        styles.container,
+    <ScrollView
+      style={styles.container}
+      bounces={false}
+      contentContainerStyle={[
+        styles.contentContainer,
         { paddingTop: insets.top, paddingBottom: insets.bottom },
       ]}
     >
@@ -126,24 +128,21 @@ const MixedScreen = () => {
       <View style={styles.body}>
         <View style={styles.section}>
           <View style={styles.tableHeaderRow}>
-            <View style={[styles.tableHeaderCell, styles.tableHeaderCellLeft]}>
+            <View style={styles.tableHeaderCell}>
               <Text style={styles.tableHeaderText}>Chord</Text>
             </View>
             <View style={styles.tableHeaderCell}>
               <Text style={styles.tableHeaderText}>Notes</Text>
             </View>
           </View>
-          <FlatList
-            data={diatonic}
-            keyExtractor={(item) => item.degree}
-            renderItem={({ item, index }) => {
+          <View>
+            {diatonic.map((item, index) => {
               const chordSelected = index === selectedChordIndex;
               const noteSelected = chordToneIndices.includes(index);
-              const chordLabel = include7th
-                ? item.chord
-                : `${item.root} ${getTriadAbbreviation(item.quality)}`;
+              const chordLabel = include7th ? item.chord : `${item.root} ${getTriadAbbreviation(item.quality)}`;
               return (
                 <Pressable
+                  key={item.degree}
                   style={styles.tableDataRow}
                   onPress={() => setSelectedChordIndex(index)}
                 >
@@ -174,8 +173,8 @@ const MixedScreen = () => {
                   </View>
                 </Pressable>
               );
-            }}
-          />
+            })}
+          </View>
         </View>
       </View>
 
@@ -190,12 +189,13 @@ const MixedScreen = () => {
           closeSelector();
         }}
       />
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
+  contentContainer: { flexGrow: 1 },
   header: { paddingHorizontal: 20, paddingTop: 12, gap: 16 },
   selectors: { gap: 10 },
   selectorRow: { flexDirection: "row", gap: 10 },
@@ -222,12 +222,11 @@ const styles = StyleSheet.create({
   checkboxRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6 },
   checkbox: { width: 26, alignItems: "center", justifyContent: "center" },
   checkboxLabel: { color: colors.text.primary, fontSize: 16, fontWeight: "700" },
-  body: { flex: 1, paddingHorizontal: 20, paddingTop: 16, gap: 16 },
-  section: { gap: 10, flexShrink: 1 },
+  body: { paddingHorizontal: 20, paddingTop: 16, gap: 16 },
+  section: { gap: 10 },
   tableHeaderRow: { flexDirection: "row", gap: 10 },
-  tableHeaderCell: { flex: 1, alignItems: "center", justifyContent: "center", paddingVertical: 6 },
-  tableHeaderCellLeft: { alignItems: "flex-start" },
-  tableHeaderText: { color: colors.text.secondary, fontSize: 14, fontWeight: "800", textAlign: "center" },
+  tableHeaderCell: { flex: 1, alignItems: "flex-start", justifyContent: "center", paddingVertical: 6 },
+  tableHeaderText: { color: colors.text.secondary, fontSize: 14, fontWeight: "800", textAlign: "left" },
   tableDataRow: { flexDirection: "row", gap: 10, marginBottom: 10 },
   tableDataCell: {
     flex: 1,
@@ -242,7 +241,7 @@ const styles = StyleSheet.create({
   chordCellRow: { flexDirection: "row", alignItems: "center", gap: 10 },
   degreeText: { color: colors.text.secondary, fontSize: 13, fontWeight: "900", letterSpacing: 0.2 },
   chordNameText: { fontSize: 17, fontWeight: "800", textAlign: "left", flexShrink: 1 },
-  noteCellText: { fontSize: 18, fontWeight: "800", textAlign: "center" },
+  noteCellText: { fontSize: 18, fontWeight: "800", textAlign: "left" },
   textSelected: { color: colors.text.primary },
   textUnselected: { color: "rgba(241,245,249,0.78)" },
 });

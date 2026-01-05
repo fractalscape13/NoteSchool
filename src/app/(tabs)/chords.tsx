@@ -1,12 +1,17 @@
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OptionsModal } from "../../components/OptionsModal";
 import { storage, STORAGE_KEYS } from "../../constants/storage";
 import { colors } from "../../constants/theme";
 import { getDiatonicTriads, Mode } from "../../utils/chords";
-import { keyOptions, keyTypeOptions, type KeyTypeValue, type KeyValue } from "../../utils/keys";
+import {
+  keyOptions,
+  keyTypeOptions,
+  type KeyTypeValue,
+  type KeyValue,
+} from "../../utils/keys";
 
 type SelectorOption<TValue extends string> = { label: string; value: TValue };
 
@@ -14,12 +19,14 @@ const ChordsScreen = () => {
   const insets = useSafeAreaInsets();
   const [key, setKey] = useState<KeyValue>(() => {
     const savedKey = storage.getString(STORAGE_KEYS.CHORDS_KEY);
-    if (savedKey && keyOptions.some((o) => o.value === savedKey)) return savedKey as KeyValue;
+    if (savedKey && keyOptions.some((o) => o.value === savedKey))
+      return savedKey as KeyValue;
     return "C";
   });
   const [keyType, setKeyType] = useState<KeyTypeValue>(() => {
     const savedType = storage.getString(STORAGE_KEYS.CHORDS_TYPE);
-    if (savedType && keyTypeOptions.some((o) => o.value === savedType)) return savedType as KeyTypeValue;
+    if (savedType && keyTypeOptions.some((o) => o.value === savedType))
+      return savedType as KeyTypeValue;
     return "ionian";
   });
   const [include7th, setInclude7th] = useState<boolean>(() => {
@@ -55,10 +62,12 @@ const ChordsScreen = () => {
   }, [include7th]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        { paddingTop: insets.top, paddingBottom: insets.bottom },
+    <ScrollView
+      style={styles.container}
+      bounces={false}
+      contentContainerStyle={[
+        styles.contentContainer,
+        { paddingTop: insets.top },
       ]}
     >
       <View style={styles.header}>
@@ -153,7 +162,7 @@ const ChordsScreen = () => {
           closeSelector();
         }}
       />
-    </View>
+    </ScrollView>
   );
 };
 
@@ -162,6 +171,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  contentContainer: {  paddingBottom: 12 },
   header: { paddingHorizontal: 20, paddingTop: 12, gap: 16 },
   table: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
   tableHeaderRow: { flexDirection: "row", gap: 10 },

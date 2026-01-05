@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { storage, STORAGE_KEYS } from "../../constants/storage";
 import { colors } from "../../constants/theme";
@@ -7,6 +7,8 @@ import { Note, notes } from "../../utils/notes";
 
 const NotesScreen = () => {
   const insets = useSafeAreaInsets();
+  const { height } = useWindowDimensions();
+  const noteFontSize = height < 700 ? 250 : 280;
   const [includeAccidentals, setIncludeAccidentals] = useState<boolean>(() => {
     const savedIncludeAccidentals = storage.getBoolean(STORAGE_KEYS.INCLUDE_ACCIDENTALS);
     return savedIncludeAccidentals ?? false;
@@ -120,7 +122,7 @@ const NotesScreen = () => {
           activeOpacity={0.9}
           style={styles.noteTouchable}
         >
-          <Text style={[styles.noteText, !isRunning && styles.noteTextInactive]}>
+          <Text style={[styles.noteText, { fontSize: noteFontSize }, !isRunning && styles.noteTextInactive]}>
             {currentNote.name}
           </Text>
         </TouchableOpacity>
@@ -204,7 +206,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   noteText: {
-    fontSize: 280,
     fontWeight: "bold",
     color: colors.primary,
     textAlign: "center",

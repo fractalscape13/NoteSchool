@@ -20,6 +20,9 @@
       "edgeToEdgeEnabled": true,
       "package": "com.app.noteschool"
     },
+    "androidNavigationBar": {
+      "enforceContrast": false
+    },
     "web": {
       "bundler": "metro",
       "output": "static",

@@ -11,8 +11,6 @@ export const keyOptions = [
   { label: "A", value: "A" },
   { label: "B♭", value: "Bb" },
   { label: "B", value: "B" },
-  { label: "D♭", value: "Db" },
-  { label: "G♭", value: "Gb" },
 ] as const satisfies ReadonlyArray<{ label: string; value: string }>;
 
 export type KeyValue = (typeof keyOptions)[number]["value"];

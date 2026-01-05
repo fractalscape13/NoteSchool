@@ -28,6 +28,8 @@ export const OptionsModal = ({
       visible={visible}
       transparent={false}
       animationType="slide"
+      statusBarTranslucent
+      navigationBarTranslucent
       onRequestClose={onClose}
     >
       <View style={styles.modalOverlay}>

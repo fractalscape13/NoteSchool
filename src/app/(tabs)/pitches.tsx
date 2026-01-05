@@ -5,13 +5,24 @@ import { useCallback, useEffect, useRef } from "react";
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
-import { Note, notes } from "../../utils/notes";
+import { keyOptions } from "../../utils/keys";
+import { notes } from "../../utils/notes";
+
+type KeyOption = (typeof keyOptions)[number];
+type PitchItem = { value: KeyOption["value"]; label: KeyOption["label"]; audioFile: number };
 
 const PitchesScreen = () => {
   const soundRef = useRef<Audio.Sound | null>(null);
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   const tabBarHeight = useBottomTabBarHeight();
+  const availableHeight = windowHeight - insets.top - insets.bottom - tabBarHeight - 60;
+  const buttonHeight = Math.max(availableHeight / 6, 90);
+  const pitchItems: ReadonlyArray<PitchItem> = keyOptions.flatMap((o): PitchItem[] => {
+    const matchingNote = notes.find((n) => n.name === o.label || n.altName === o.label);
+    if (!matchingNote) return [];
+    return [{ value: o.value, label: o.label, audioFile: matchingNote.audioFile }];
+  });
 
   useEffect(() => {
     Audio.setAudioModeAsync({
@@ -48,14 +59,13 @@ const PitchesScreen = () => {
     }
   }, []);
 
-  const renderItem = ({ item }: LegendListRenderItemProps<Note>) => (
+  const renderItem = ({ item }: LegendListRenderItemProps<PitchItem>) => (
     <TouchableOpacity
-      style={[styles.button, { height: (windowHeight - insets.top - insets.bottom - tabBarHeight - 60) / 6 }]}
+      style={[styles.button, { height: (windowHeight - insets.top - insets.bottom - tabBarHeight - 50) / 6 }]}
       onPress={() => playNote(item.audioFile)}
     >
       <Text style={styles.buttonText}>
-        {item.name}
-        {item.altName && ` · ${item.altName}`}
+        {item.label}
       </Text>
     </TouchableOpacity>
   );
@@ -63,13 +73,15 @@ const PitchesScreen = () => {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <LegendList
-        data={notes}
+        data={pitchItems}
         renderItem={renderItem}
-        keyExtractor={(item: Note) => item.name}
+        keyExtractor={(item: PitchItem) => item.value}
         numColumns={2}
         contentContainerStyle={styles.buttonContainer}
         columnWrapperStyle={styles.columnWrapper}
-        scrollEnabled={false}
+        scrollEnabled
+        showsVerticalScrollIndicator={false}
+        bounces={false}
       />
     </View>
   );
