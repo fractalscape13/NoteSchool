@@ -1,11 +1,11 @@
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
-import { useCallback, useEffect, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '../../src/constants/theme';
-import { Note, notes } from '../../src/utils/notes';
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
+import { useCallback, useEffect, useRef } from "react";
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { colors } from "../../constants/theme";
+import { Note, notes } from "../../utils/notes";
 
 const PitchesScreen = () => {
   const soundRef = useRef<Audio.Sound | null>(null);

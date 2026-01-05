@@ -78,6 +78,22 @@ const romanForQuality = (degreeIndex: number, quality: TriadQuality) => {
   return core;
 };
 
+const degreeSemitoneDeltaFromIonian = (mode: Mode, degreeIndex: number) => {
+  const ionianInterval = modeIntervals.ionian[degreeIndex] ?? 0;
+  const modeInterval = modeIntervals[mode][degreeIndex] ?? 0;
+  return modeInterval - ionianInterval;
+};
+
+export const getDegreeAccidentalPrefixForMode = (mode: Mode, degreeIndex: number) => {
+  const delta = degreeSemitoneDeltaFromIonian(mode, degreeIndex);
+  if (delta === 0) return "";
+  if (delta > 0) return "♯".repeat(delta);
+  return "♭".repeat(Math.abs(delta));
+};
+
+export const getNumericDegreeLabelsForMode = (mode: Mode) =>
+  letters.map((_, i) => `${getDegreeAccidentalPrefixForMode(mode, i)}${i + 1}`);
+
 export const getDiatonicTriads = (key: string, mode: Mode, include7th = false): DiatonicTriad[] => {
   const normalizedKey = normalizeKeyInput(key);
   const tonic = parseSpelledNote(normalizedKey);
@@ -91,20 +107,12 @@ export const getDiatonicTriads = (key: string, mode: Mode, include7th = false): 
     const name = `${degreeLetter}${accidentalToString(accidental)}`;
     return { name, pc: targetPc };
   });
-  const degreePrefixForMode = (degreeIndex: number) => {
-    const ionianInterval = modeIntervals.ionian[degreeIndex] ?? 0;
-    const modeInterval = intervals[degreeIndex] ?? 0;
-    const delta = modeInterval - ionianInterval;
-    if (delta === 0) return "";
-    if (delta > 0) return "♯".repeat(delta);
-    return "♭".repeat(Math.abs(delta));
-  };
 
   return scale.map((note, i) => {
     const third = scale[(i + 2) % 7];
     const fifth = scale[(i + 4) % 7];
     const quality = triadQualityFromPitchClasses(note.pc, third.pc, fifth.pc);
-    const degree = `${degreePrefixForMode(i)}${romanForQuality(i, quality)}`;
+    const degree = `${getDegreeAccidentalPrefixForMode(mode, i)}${romanForQuality(i, quality)}`;
     const root = toUnicodeAccidentals(note.name);
     if (!include7th) return { degree, root, quality, chord: `${root} ${quality}` };
     const seventh = scale[(i + 6) % 7];

@@ -1,7 +1,7 @@
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors } from "../../src/constants/theme";
+import { colors } from "../../constants/theme";
 
 const TabLayout = () => {
   const insets = useSafeAreaInsets();
@@ -24,7 +24,7 @@ const TabLayout = () => {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="chords"
         options={{
           title: "Chords",
           tabBarIcon: ({ color }) => (
@@ -38,6 +38,15 @@ const TabLayout = () => {
           title: "Scales",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="list" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: "Mixed",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="th" size={28} color={color} />
           ),
         }}
       />

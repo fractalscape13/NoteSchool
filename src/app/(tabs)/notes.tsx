@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { storage, STORAGE_KEYS } from "../../src/constants/storage";
-import { colors } from "../../src/constants/theme";
-import { Note, notes } from "../../src/utils/notes";
+import { storage, STORAGE_KEYS } from "../../constants/storage";
+import { colors } from "../../constants/theme";
+import { Note, notes } from "../../utils/notes";
 
 const NotesScreen = () => {
   const insets = useSafeAreaInsets();
@@ -65,9 +65,6 @@ const NotesScreen = () => {
 
   useEffect(() => {
     changeNote(includeAccidentals);
-    if (typeof intervalTime === "number") {
-      startTimer(intervalTime);
-    }
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -81,7 +78,7 @@ const NotesScreen = () => {
     } else if (isRunning) {
       stopTimer();
     }
-  }, [intervalTime, includeAccidentals]);
+  }, [includeAccidentals, intervalTime, isRunning]);
 
   useEffect(() => {
     storage.set(STORAGE_KEYS.INTERVAL_TIME, intervalTime);

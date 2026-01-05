@@ -1,40 +1,14 @@
 import { FontAwesome } from "@expo/vector-icons";
-import React, { useEffect, useMemo, useState } from "react";
-import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { storage, STORAGE_KEYS } from "../../src/constants/storage";
-import { colors } from "../../src/constants/theme";
-import { getDiatonicTriads, Mode } from "../../src/utils/chords";
+import { OptionsModal } from "../../components/OptionsModal";
+import { storage, STORAGE_KEYS } from "../../constants/storage";
+import { colors } from "../../constants/theme";
+import { getDiatonicTriads, getNumericDegreeLabelsForMode, Mode } from "../../utils/chords";
+import { keyOptions, keyTypeOptions, type KeyTypeValue, type KeyValue } from "../../utils/keys";
 
 type SelectorOption<TValue extends string> = { label: string; value: TValue };
-const keyOptions = [
-  { label: "C", value: "C" },
-  { label: "C♯", value: "C#" },
-  { label: "D", value: "D" },
-  { label: "E♭", value: "Eb" },
-  { label: "E", value: "E" },
-  { label: "F", value: "F" },
-  { label: "F♯", value: "F#" },
-  { label: "G", value: "G" },
-  { label: "A♭", value: "Ab" },
-  { label: "A", value: "A" },
-  { label: "B♭", value: "Bb" },
-  { label: "B", value: "B" },
-  { label: "D♭", value: "Db" },
-  { label: "G♭", value: "Gb" },
-] as const satisfies ReadonlyArray<SelectorOption<string>>;
-type KeyValue = (typeof keyOptions)[number]["value"];
-
-const keyTypeOptions = [
-  { label: "Ionian", value: "ionian" },
-  { label: "Dorian", value: "dorian" },
-  { label: "Phrygian", value: "phrygian" },
-  { label: "Lydian", value: "lydian" },
-  { label: "Mixolydian", value: "mixolydian" },
-  { label: "Aeolian", value: "aeolian" },
-  { label: "Locrian", value: "locrian" },
-] as const satisfies ReadonlyArray<SelectorOption<string>>;
-type KeyTypeValue = (typeof keyTypeOptions)[number]["value"];
 
 const ScalesScreen = () => {
   const insets = useSafeAreaInsets();
@@ -53,13 +27,13 @@ const ScalesScreen = () => {
     const triads = getDiatonicTriads(key, keyType as Mode, false);
     return triads.map((t) => t.root);
   }, [key, keyType]);
+  const degreeLabels = useMemo(() => getNumericDegreeLabelsForMode(keyType as Mode), [keyType]);
   const selector = useMemo(() => {
     const isKeySelector = openSelector === "key";
     const isTypeSelector = openSelector === "type";
     const options: ReadonlyArray<SelectorOption<string>> = isKeySelector ? keyOptions : keyTypeOptions;
     const selectedValue = isKeySelector ? key : keyType;
-    const title = isKeySelector ? "Key" : "Type";
-    return { isKeySelector, isTypeSelector, options, selectedValue, title };
+    return { isKeySelector, isTypeSelector, options, selectedValue };
   }, [key, keyType, openSelector]);
   const closeSelector = () => setOpenSelector(null);
 
@@ -117,7 +91,7 @@ const ScalesScreen = () => {
           renderItem={({ item, index }) => (
             <View style={styles.tableDataRow}>
               <View style={styles.tableDataCell}>
-                <Text style={styles.tableDataText}>{index + 1}</Text>
+                <Text style={styles.tableDataText}>{degreeLabels[index] ?? index + 1}</Text>
               </View>
               <View style={styles.tableDataCell}>
                 <Text style={styles.tableDataText}>{item}</Text>
@@ -126,48 +100,17 @@ const ScalesScreen = () => {
           )}
         />
       </View>
-      <Modal
+      <OptionsModal
         visible={!!openSelector}
-        transparent={false}
-        animationType="slide"
-        onRequestClose={closeSelector}
-      >
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalCard,
-              {
-                paddingTop: Math.max(insets.top, 12),
-                paddingBottom: Math.max(insets.bottom, 12),
-              },
-            ]}
-          >
-            <Pressable style={styles.modalCloseButton} onPress={closeSelector} hitSlop={10}>
-              <FontAwesome name="close" size={18} color={colors.text.secondary} />
-            </Pressable>
-            <Text style={styles.modalTitle}>{selector.title}</Text>
-            <FlatList
-              data={selector.options}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={[
-                    styles.optionRow,
-                    item.value === selector.selectedValue && styles.optionRowSelected,
-                  ]}
-                  onPress={() => {
-                    if (selector.isKeySelector) setKey(item.value as KeyValue);
-                    if (selector.isTypeSelector) setKeyType(item.value as KeyTypeValue);
-                    closeSelector();
-                  }}
-                >
-                  <Text style={styles.optionText}>{item.label}</Text>
-                </Pressable>
-              )}
-            />
-          </View>
-        </View>
-      </Modal>
+        options={selector.options}
+        selectedValue={selector.selectedValue}
+        onClose={closeSelector}
+        onSelect={(value) => {
+          if (selector.isKeySelector) setKey(value as KeyValue);
+          if (selector.isTypeSelector) setKeyType(value as KeyTypeValue);
+          closeSelector();
+        }}
+      />
     </View>
   );
 };
@@ -212,17 +155,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     paddingRight: 8,
   },
-  modalOverlay: { flex: 1, backgroundColor: colors.background },
-  modalCard: { flex: 1, backgroundColor: colors.background, paddingHorizontal: 12, gap: 8 },
-  modalCloseButton: { alignSelf: "flex-end", padding: 8 },
-  modalTitle: { color: colors.text.primary, fontSize: 18, fontWeight: "800", paddingHorizontal: 8 },
-  optionRow: { paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12 },
-  optionRowSelected: {
-    backgroundColor: colors.tuner.button.background,
-    borderWidth: 1,
-    borderColor: colors.tuner.button.border,
-  },
-  optionText: { color: colors.text.primary, fontSize: 24, fontWeight: "500" },
 });
 
 export default ScalesScreen;

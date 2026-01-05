@@ -1,40 +1,14 @@
 import { FontAwesome } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useState } from "react";
-import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { storage, STORAGE_KEYS } from "../../src/constants/storage";
-import { colors } from "../../src/constants/theme";
-import { getDiatonicTriads, Mode } from "../../src/utils/chords";
+import { OptionsModal } from "../../components/OptionsModal";
+import { storage, STORAGE_KEYS } from "../../constants/storage";
+import { colors } from "../../constants/theme";
+import { getDiatonicTriads, Mode } from "../../utils/chords";
+import { keyOptions, keyTypeOptions, type KeyTypeValue, type KeyValue } from "../../utils/keys";
 
 type SelectorOption<TValue extends string> = { label: string; value: TValue };
-const keyOptions = [
-  { label: "C", value: "C" },
-  { label: "C♯", value: "C#" },
-  { label: "D", value: "D" },
-  { label: "E♭", value: "Eb" },
-  { label: "E", value: "E" },
-  { label: "F", value: "F" },
-  { label: "F♯", value: "F#" },
-  { label: "G", value: "G" },
-  { label: "A♭", value: "Ab" },
-  { label: "A", value: "A" },
-  { label: "B♭", value: "Bb" },
-  { label: "B", value: "B" },
-  { label: "D♭", value: "Db" },
-  { label: "G♭", value: "Gb" },
-] as const satisfies ReadonlyArray<SelectorOption<string>>;
-type KeyValue = (typeof keyOptions)[number]["value"];
-
-const keyTypeOptions = [
-  { label: "Ionian", value: "ionian" },
-  { label: "Dorian", value: "dorian" },
-  { label: "Phrygian", value: "phrygian" },
-  { label: "Lydian", value: "lydian" },
-  { label: "Mixolydian", value: "mixolydian" },
-  { label: "Aeolian", value: "aeolian" },
-  { label: "Locrian", value: "locrian" },
-] as const satisfies ReadonlyArray<SelectorOption<string>>;
-type KeyTypeValue = (typeof keyTypeOptions)[number]["value"];
 
 const ChordsScreen = () => {
   const insets = useSafeAreaInsets();
@@ -64,8 +38,7 @@ const ChordsScreen = () => {
       ? keyOptions
       : keyTypeOptions;
     const selectedValue = isKeySelector ? key : keyType;
-    const title = isKeySelector ? "Key" : "Type";
-    return { isKeySelector, isTypeSelector, options, selectedValue, title };
+    return { isKeySelector, isTypeSelector, options, selectedValue };
   }, [key, keyType, openSelector]);
   const closeSelector = () => setOpenSelector(null);
 
@@ -169,60 +142,17 @@ const ChordsScreen = () => {
           </View>
         ))}
       </View>
-      <Modal
+      <OptionsModal
         visible={!!openSelector}
-        transparent={false}
-        animationType="slide"
-        onRequestClose={closeSelector}
-      >
-        <View style={styles.modalOverlay}>
-          <View
-            style={[
-              styles.modalCard,
-              {
-                paddingTop: Math.max(insets.top, 12),
-                paddingBottom: Math.max(insets.bottom, 12),
-              },
-            ]}
-          >
-            <Pressable
-              style={styles.modalCloseButton}
-              onPress={closeSelector}
-              hitSlop={10}
-            >
-              <FontAwesome
-                name="close"
-                size={18}
-                color={colors.text.secondary}
-              />
-            </Pressable>
-            <FlatList
-              data={selector.options}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={[
-                    styles.optionRow,
-                    item.value === selector.selectedValue &&
-                      styles.optionRowSelected,
-                  ]}
-                  onPress={() => {
-                    if (selector.isKeySelector) {
-                      setKey(item.value as KeyValue);
-                    }
-                    if (selector.isTypeSelector) {
-                      setKeyType(item.value as KeyTypeValue);
-                    }
-                    closeSelector();
-                  }}
-                >
-                  <Text style={styles.optionText}>{item.label}</Text>
-                </Pressable>
-              )}
-            />
-          </View>
-        </View>
-      </Modal>
+        options={selector.options}
+        selectedValue={selector.selectedValue}
+        onClose={closeSelector}
+        onSelect={(value) => {
+          if (selector.isKeySelector) setKey(value as KeyValue);
+          if (selector.isTypeSelector) setKeyType(value as KeyTypeValue);
+          closeSelector();
+        }}
+      />
     </View>
   );
 };
@@ -237,7 +167,7 @@ const styles = StyleSheet.create({
   tableHeaderRow: { flexDirection: "row", gap: 10 },
   tableHeaderCell: {
     flex: 1,
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "center",
     paddingVertical: 6,
   },
@@ -245,7 +175,7 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
     fontSize: 14,
     fontWeight: "800",
-    textAlign: "center",
+    textAlign: "left",
   },
   tableDataRow: { flexDirection: "row", gap: 10 },
   tableDataCell: {
@@ -261,7 +191,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     fontSize: 16,
     fontWeight: "800",
-    textAlign: "center",
+    textAlign: "left",
   },
   selectors: { gap: 10 },
   selectorRow: { flexDirection: "row", gap: 10 },
@@ -301,20 +231,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     paddingRight: 8,
   },
-  modalOverlay: { flex: 1, backgroundColor: colors.background },
-  modalCard: {
-    flex: 1,
-    backgroundColor: colors.background,
-    paddingHorizontal: 12,
-  },
-  modalCloseButton: { alignSelf: "flex-end", padding: 8, marginBottom: 6 },
-  optionRow: { paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12 },
-  optionRowSelected: {
-    backgroundColor: colors.tuner.button.background,
-    borderWidth: 1,
-    borderColor: colors.tuner.button.border,
-  },
-  optionText: { color: colors.text.primary, fontSize: 24, fontWeight: "500" },
 });
 
 export default ChordsScreen;
