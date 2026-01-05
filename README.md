@@ -1,6 +1,6 @@
-# NoteSchool 🎸
+# Chord & Scale Reference 🎸
 
-A minimalist music reference tool
+A minimalist music theory reference tool
 
 ## Features
 
