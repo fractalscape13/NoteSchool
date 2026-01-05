@@ -16,7 +16,7 @@ const NotesScreen = () => {
     const savedInterval = storage.getNumber(STORAGE_KEYS.INTERVAL_TIME);
     return savedInterval ?? 2;
   });
-  const [isRunning, setIsRunning] = useState<boolean>(true);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
   const [currentSecond, setCurrentSecond] = useState<number>(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 

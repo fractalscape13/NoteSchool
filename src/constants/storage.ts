@@ -8,4 +8,6 @@ export const STORAGE_KEYS = {
   CHORDS_TYPE: 'chords_type',
   INCLUDE_ACCIDENTALS: 'include_accidentals',
   INTERVAL_TIME: 'interval_time',
+  SCALES_KEY: 'scales_key',
+  SCALES_TYPE: 'scales_type',
 } as const; 

@@ -18,9 +18,6 @@ const modeIntervals: Record<Mode, readonly number[]> = {
 const roman: readonly string[] = ["I", "II", "III", "IV", "V", "VI", "VII"];
 
 const mod12 = (n: number) => ((n % 12) + 12) % 12;
-const sharpPitchClassNames: readonly string[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "Bb", "B"];
-const flatPitchClassNames: readonly string[] = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-const pitchClassToName = (pc: number, preferFlats: boolean) => (preferFlats ? flatPitchClassNames : sharpPitchClassNames)[mod12(pc)] ?? "C";
 const toUnicodeAccidentals = (name: string) => name.replaceAll("b", "♭").replaceAll("#", "♯");
 const normalizeKeyInput = (key: string) => {
   const normalized = key.trim().replaceAll("♭", "b").replaceAll("♯", "#");
@@ -85,11 +82,14 @@ export const getDiatonicTriads = (key: string, mode: Mode, include7th = false): 
   const normalizedKey = normalizeKeyInput(key);
   const tonic = parseSpelledNote(normalizedKey);
   const tonicPc = mod12(naturalPitchClass[tonic.letter] + tonic.accidental);
-  const preferFlats = tonic.accidental < 0 || normalizedKey.includes("b") || normalizedKey === "F";
   const intervals = modeIntervals[mode];
   const scale = intervals.map((interval, i) => {
     const targetPc = mod12(tonicPc + interval);
-    return { name: pitchClassToName(targetPc, preferFlats), pc: targetPc };
+    const degreeLetter = nextLetter(tonic.letter, i);
+    const degreeNaturalPc = naturalPitchClass[degreeLetter];
+    const accidental = normalizeAccidental(signedSemitoneDistance(degreeNaturalPc, targetPc));
+    const name = `${degreeLetter}${accidentalToString(accidental)}`;
+    return { name, pc: targetPc };
   });
   const degreePrefixForMode = (degreeIndex: number) => {
     const ionianInterval = modeIntervals.ionian[degreeIndex] ?? 0;

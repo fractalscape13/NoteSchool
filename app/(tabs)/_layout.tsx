@@ -33,6 +33,15 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="scales"
+        options={{
+          title: "Scales",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="list" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="notes"
         options={{
           title: "Notes",
