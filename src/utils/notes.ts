@@ -1,7 +1,7 @@
 export type Note = {
   name: string;
   altName?: string;
-  audioFile: any;
+  audioFile: number;
   natural: boolean;
 };
 
@@ -16,6 +16,6 @@ export const notes: Note[] = [
   { name: 'G', audioFile: require('../../assets/audio/G.mp3'), natural: true },
   { name: 'G♯', altName: 'A♭', audioFile: require('../../assets/audio/Gs.mp3'), natural: false },
   { name: 'A', audioFile: require('../../assets/audio/A.mp3'), natural: true },
-  { name: 'A♯', altName: 'B♭', audioFile: require('../../assets/audio/As.mp3'), natural: false },
+  { name: 'B♭', audioFile: require('../../assets/audio/As.mp3'), natural: false },
   { name: 'B', audioFile: require('../../assets/audio/B.mp3'), natural: true },
 ]; 

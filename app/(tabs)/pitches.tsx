@@ -1,30 +1,52 @@
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
-import { Audio } from 'expo-av';
-import { useState } from 'react';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
+import { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../src/constants/theme';
 import { Note, notes } from '../../src/utils/notes';
 
 const PitchesScreen = () => {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const soundRef = useRef<Audio.Sound | null>(null);
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   const tabBarHeight = useBottomTabBarHeight();
 
-  const playNote = async (audioFile: any) => {
+  useEffect(() => {
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
+      interruptionModeIOS: InterruptionModeIOS.DuckOthers,
+    }).catch((error) => {
+      console.error('Error setting audio mode:', error);
+    });
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      soundRef.current?.setOnPlaybackStatusUpdate(null);
+      soundRef.current?.unloadAsync().catch(() => {});
+      soundRef.current = null;
+    };
+  }, []);
+
+  const playNote = useCallback(async (audioFile: number) => {
     try {
-      if (sound) {
-        await sound.unloadAsync();
+      if (soundRef.current) {
+        soundRef.current.setOnPlaybackStatusUpdate(null);
+        await soundRef.current.unloadAsync();
+        soundRef.current = null;
       }
-      const { sound: newSound } = await Audio.Sound.createAsync(audioFile);
-      setSound(newSound);
-      await newSound.playAsync();
+      const { sound } = await Audio.Sound.createAsync(audioFile, { shouldPlay: true });
+      sound.setOnPlaybackStatusUpdate(() => {});
+      soundRef.current = sound;
     } catch (error) {
       console.error('Error playing note:', error);
     }
-  };
+  }, []);
 
   const renderItem = ({ item }: LegendListRenderItemProps<Note>) => (
     <TouchableOpacity

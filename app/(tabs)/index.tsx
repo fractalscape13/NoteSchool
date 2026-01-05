@@ -1,184 +1,228 @@
-import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
+import React, { useEffect, useMemo, useState } from "react";
+import { FlatList, Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { storage, STORAGE_KEYS } from "../../src/constants/storage";
 import { colors } from "../../src/constants/theme";
-import { Note, notes } from "../../src/utils/notes";
+import { getDiatonicTriads, Mode } from "../../src/utils/chords";
 
-const NotesScreen = () => {
+type SelectorOption<TValue extends string> = { label: string; value: TValue };
+const keyOptions = [
+  { label: "C", value: "C" },
+  { label: "C♯", value: "C#" },
+  { label: "D", value: "D" },
+  { label: "E♭", value: "Eb" },
+  { label: "E", value: "E" },
+  { label: "F", value: "F" },
+  { label: "F♯", value: "F#" },
+  { label: "G", value: "G" },
+  { label: "A♭", value: "Ab" },
+  { label: "A", value: "A" },
+  { label: "B♭", value: "Bb" },
+  { label: "B", value: "B" },
+  { label: "D♭", value: "Db" },
+  { label: "G♭", value: "Gb" },
+] as const satisfies ReadonlyArray<SelectorOption<string>>;
+type KeyValue = (typeof keyOptions)[number]["value"];
+
+const keyTypeOptions = [
+  { label: "Ionian", value: "ionian" },
+  { label: "Dorian", value: "dorian" },
+  { label: "Phrygian", value: "phrygian" },
+  { label: "Lydian", value: "lydian" },
+  { label: "Mixolydian", value: "mixolydian" },
+  { label: "Aeolian", value: "aeolian" },
+  { label: "Locrian", value: "locrian" },
+] as const satisfies ReadonlyArray<SelectorOption<string>>;
+type KeyTypeValue = (typeof keyTypeOptions)[number]["value"];
+
+const ChordsScreen = () => {
   const insets = useSafeAreaInsets();
-  const [includeAccidentals, setIncludeAccidentals] = useState<boolean>(false);
-  const [currentNote, setCurrentNote] = useState<Note>(notes[0]);
-  const [intervalTime, setIntervalTime] = useState<number>(() => {
-    const savedInterval = storage.getNumber(STORAGE_KEYS.INTERVAL_TIME);
-    return savedInterval ?? 2;
+  const [key, setKey] = useState<KeyValue>(() => {
+    const savedKey = storage.getString(STORAGE_KEYS.CHORDS_KEY);
+    if (savedKey && keyOptions.some((o) => o.value === savedKey)) return savedKey as KeyValue;
+    return "C";
   });
-  const [isRunning, setIsRunning] = useState<boolean>(true);
-  const [currentSecond, setCurrentSecond] = useState<number>(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const changeNote = () => {
-    const filteredNotes = includeAccidentals ? notes : notes.filter(note => note.natural);
-    const randomIndex = Math.floor(Math.random() * filteredNotes.length);
-    setCurrentNote(filteredNotes[randomIndex]);
-    setCurrentSecond(0);
-  };
-
-  const startTimer = (seconds: number) => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    setIsRunning(true);
-    setCurrentSecond(0);
-
-    intervalRef.current = setInterval(() => {
-      setCurrentSecond((prev) => {
-        const nextSecond = prev + 1;
-        if (nextSecond >= seconds) {
-          changeNote();
-          return 0;
-        }
-        return nextSecond;
-      });
-    }, 1000);
-  };
-
-  const stopTimer = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-    setIsRunning(false);
-  };
-
-  const toggleAccidentals = () => {
-    setIncludeAccidentals(!includeAccidentals);
-    changeNote();
-  };
+  const [keyType, setKeyType] = useState<KeyTypeValue>(() => {
+    const savedType = storage.getString(STORAGE_KEYS.CHORDS_TYPE);
+    if (savedType && keyTypeOptions.some((o) => o.value === savedType)) return savedType as KeyTypeValue;
+    return "ionian";
+  });
+  const [include7th, setInclude7th] = useState<boolean>(() => {
+    const savedInclude7th = storage.getBoolean(STORAGE_KEYS.CHORDS_INCLUDE_7TH);
+    return savedInclude7th ?? false;
+  });
+  const [openSelector, setOpenSelector] = useState<"key" | "type" | null>(null);
+  const chords = useMemo(
+    () => getDiatonicTriads(key, keyType as Mode, include7th),
+    [include7th, key, keyType]
+  );
+  const selector = useMemo(() => {
+    const isKeySelector = openSelector === "key";
+    const isTypeSelector = openSelector === "type";
+    const options: ReadonlyArray<SelectorOption<string>> = isKeySelector
+      ? keyOptions
+      : keyTypeOptions;
+    const selectedValue = isKeySelector ? key : keyType;
+    const title = isKeySelector ? "Key" : "Type";
+    return { isKeySelector, isTypeSelector, options, selectedValue, title };
+  }, [key, keyType, openSelector]);
+  const closeSelector = () => setOpenSelector(null);
 
   useEffect(() => {
-    changeNote();
-    if (typeof intervalTime === "number") {
-      startTimer(intervalTime);
-    }
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
+    storage.set(STORAGE_KEYS.CHORDS_KEY, key);
+  }, [key]);
 
   useEffect(() => {
-    if (isRunning && typeof intervalTime === "number") {
-      startTimer(intervalTime);
-    } else if (isRunning) {
-      stopTimer();
-    }
-  }, [intervalTime, includeAccidentals]);
+    storage.set(STORAGE_KEYS.CHORDS_TYPE, keyType);
+  }, [keyType]);
 
   useEffect(() => {
-    storage.set(STORAGE_KEYS.INTERVAL_TIME, intervalTime);
-  }, [intervalTime]);
-
-  const renderDotIndicators = () => {
-    const dots = [];
-    for (let i = 0; i < intervalTime; i++) {
-      dots.push(
-        <View
-          key={i}
-          style={[styles.dot, i === currentSecond && styles.activeDot]}
-        />
-      );
-    }
-    if (dots.length > 1) {
-      return dots;
-    }
-    return null;
-  };
+    storage.set(STORAGE_KEYS.CHORDS_INCLUDE_7TH, include7th);
+  }, [include7th]);
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
-      <View style={styles.noteContainer}>
-        <TouchableOpacity
-          onPress={() => {
-            if (isRunning) {
-              stopTimer();
-            } else {
-              if (typeof intervalTime === "number") {
-                startTimer(intervalTime);
-              }
-            }
-          }}
-          activeOpacity={0.9}
-          style={styles.noteTouchable}
-        >
-          <Text
-            style={[styles.noteText, !isRunning && styles.noteTextInactive]}
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
+      <View style={styles.header}>
+        <View style={styles.selectors}>
+          <View style={styles.selectorRow}>
+            <View style={styles.selectorColumn}>
+              <Text style={styles.selectorLabel}>Key</Text>
+              <Pressable
+                style={styles.selectorButton}
+                onPress={() => setOpenSelector("key")}
+              >
+                <Text
+                  style={styles.selectorValue}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {keyOptions.find((o) => o.value === key)?.label ?? key}
+                </Text>
+                <FontAwesome
+                  name="chevron-down"
+                  size={16}
+                  color={colors.text.secondary}
+                />
+              </Pressable>
+            </View>
+            <View style={styles.selectorColumn}>
+              <Text style={styles.selectorLabel}>Type</Text>
+              <Pressable
+                style={styles.selectorButton}
+                onPress={() => setOpenSelector("type")}
+              >
+                <Text
+                  style={styles.selectorValue}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {keyTypeOptions.find((o) => o.value === keyType)?.label ??
+                    "Select"}
+                </Text>
+                <FontAwesome
+                  name="chevron-down"
+                  size={16}
+                  color={colors.text.secondary}
+                />
+              </Pressable>
+            </View>
+          </View>
+          <Pressable
+            style={styles.checkboxRow}
+            onPress={() => setInclude7th((v) => !v)}
+            hitSlop={10}
           >
-            {currentNote.name}
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.dotContainer}>{renderDotIndicators()}</View>
+            <View style={styles.checkbox}>
+              <FontAwesome
+                name={include7th ? "check-square" : "square-o"}
+                size={18}
+                color={include7th ? colors.primary : colors.text.secondary}
+              />
+            </View>
+            <Text style={styles.checkboxLabel}>Include 7th</Text>
+          </Pressable>
+        </View>
       </View>
-      <View>
-        <View style={styles.controls}>
-          <View style={styles.incrementerContainer}>
-            <TouchableOpacity
-              style={styles.incrementButton}
-              hitSlop={15}
-              onPress={() => {
-                if (typeof intervalTime === "number" && intervalTime > 1) {
-                  setIntervalTime(intervalTime - 1);
-                }
-              }}
-            >
-              <Text style={styles.incrementText}>-</Text>
-            </TouchableOpacity>
-            <Text style={styles.intervalText}>{intervalTime}</Text>
-            <TouchableOpacity
-              style={styles.incrementButton}
-              hitSlop={15}
-              onPress={() => {
-                if (typeof intervalTime === "number" && intervalTime < 12) {
-                  setIntervalTime(intervalTime + 1);
-                }
-              }}
-            >
-              <Text style={styles.incrementText}>+</Text>
-            </TouchableOpacity>
+      <View style={styles.table}>
+        <View style={styles.tableHeaderRow}>
+          <View style={styles.tableHeaderCell}>
+            <Text style={styles.tableHeaderText}>Degree</Text>
+          </View>
+          <View style={styles.tableHeaderCell}>
+            <Text style={styles.tableHeaderText}>Chord</Text>
           </View>
         </View>
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[
-              styles.controlButton,
-              isRunning ? styles.stopButton : styles.startButton,
-            ]}
-            onPress={
-              isRunning
-                ? stopTimer
-                : () => {
-                    if (typeof intervalTime === "number") {
-                      startTimer(intervalTime);
-                    }
-                  }
-            }
-          >
-            <Text style={styles.buttonText}>
-              {isRunning ? "Stop" : "Start"}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.controlButton,
-              styles.accidentalsButton,
-              includeAccidentals && styles.accidentalsButtonActive,
-            ]}
-            onPress={toggleAccidentals}
-          >
-            <Text style={styles.buttonText}>Include Accidentals</Text>
-          </TouchableOpacity>
-        </View>
+        {chords.map((t) => (
+          <View key={t.degree} style={styles.tableDataRow}>
+            <View style={styles.tableDataCell}>
+              <Text style={styles.tableDataText}>{t.degree}</Text>
+            </View>
+            <View style={styles.tableDataCell}>
+              <Text style={styles.tableDataText}>{t.chord}</Text>
+            </View>
+          </View>
+        ))}
       </View>
+      <Modal
+        visible={!!openSelector}
+        transparent={false}
+        animationType="slide"
+        onRequestClose={closeSelector}
+      >
+        <View style={styles.modalOverlay}>
+          <View
+            style={[
+              styles.modalCard,
+              {
+                paddingTop: Math.max(insets.top, 12),
+                paddingBottom: Math.max(insets.bottom, 12),
+              },
+            ]}
+          >
+            <Pressable
+              style={styles.modalCloseButton}
+              onPress={closeSelector}
+              hitSlop={10}
+            >
+              <FontAwesome
+                name="close"
+                size={18}
+                color={colors.text.secondary}
+              />
+            </Pressable>
+            <FlatList
+              data={selector.options}
+              keyExtractor={(item) => item.value}
+              renderItem={({ item }) => (
+                <Pressable
+                  style={[
+                    styles.optionRow,
+                    item.value === selector.selectedValue &&
+                      styles.optionRowSelected,
+                  ]}
+                  onPress={() => {
+                    if (selector.isKeySelector) {
+                      setKey(item.value as KeyValue);
+                    }
+                    if (selector.isTypeSelector) {
+                      setKeyType(item.value as KeyTypeValue);
+                    }
+                    closeSelector();
+                  }}
+                >
+                  <Text style={styles.optionText}>{item.label}</Text>
+                </Pressable>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -188,121 +232,89 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  noteContainer: {
+  header: { paddingHorizontal: 20, paddingTop: 12, gap: 16 },
+  table: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
+  tableHeaderRow: { flexDirection: "row", gap: 10 },
+  tableHeaderCell: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
-  },
-  noteTouchable: {
-    position: "absolute",
     justifyContent: "center",
-    alignItems: "center",
+    paddingVertical: 6,
   },
-  noteText: {
-    fontSize: 280,
-    fontWeight: "bold",
-    color: colors.primary,
+  tableHeaderText: {
+    color: colors.text.secondary,
+    fontSize: 14,
+    fontWeight: "800",
     textAlign: "center",
   },
-  noteTextInactive: {
-    opacity: 0.4,
-  },
-  dotContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    position: "absolute",
-    bottom: 40,
-  },
-  dot: {
-    width: 15,
-    height: 15,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: colors.text.secondary,
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    backgroundColor: colors.text.secondary,
-  },
-  controls: {
-    flexDirection: "column",
-    padding: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 10,
-  },
-  label: {
-    color: colors.text.primary,
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  incrementerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-  incrementButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  incrementText: {
-    color: colors.primary,
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  intervalText: {
-    color: colors.text.primary,
-    fontSize: 24,
-    fontWeight: "bold",
-    minWidth: 40,
-    textAlign: "center",
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 16,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  controlButton: {
+  tableDataRow: { flexDirection: "row", gap: 10 },
+  tableDataCell: {
+    flex: 1,
     paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingHorizontal: 12,
     borderRadius: 12,
-    minWidth: 120,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  startButton: {
-    backgroundColor: colors.button.start.background,
-  },
-  stopButton: {
-    backgroundColor: colors.button.stop.background,
-  },
-  accidentalsButton: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.tuner.button.background,
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.tuner.button.border,
   },
-  accidentalsButtonActive: {
-    backgroundColor: colors.primary,
-  },
-  buttonText: {
+  tableDataText: {
+    color: colors.text.primary,
     fontSize: 16,
-    fontWeight: "600",
-    color: "white",
+    fontWeight: "800",
+    textAlign: "center",
   },
+  selectors: { gap: 10 },
+  selectorRow: { flexDirection: "row", gap: 10 },
+  selectorColumn: { flex: 1, gap: 10 },
+  selectorLabel: {
+    color: colors.text.secondary,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  checkboxRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingVertical: 6,
+  },
+  checkbox: { width: 26, alignItems: "center", justifyContent: "center" },
+  checkboxLabel: {
+    color: colors.text.primary,
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  selectorButton: {
+    backgroundColor: colors.tuner.button.background,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.tuner.button.border,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  selectorValue: {
+    color: colors.text.primary,
+    fontSize: 18,
+    fontWeight: "700",
+    flexShrink: 1,
+    paddingRight: 8,
+  },
+  modalOverlay: { flex: 1, backgroundColor: colors.background },
+  modalCard: {
+    flex: 1,
+    backgroundColor: colors.background,
+    paddingHorizontal: 12,
+  },
+  modalCloseButton: { alignSelf: "flex-end", padding: 8, marginBottom: 6 },
+  optionRow: { paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12 },
+  optionRowSelected: {
+    backgroundColor: colors.tuner.button.background,
+    borderWidth: 1,
+    borderColor: colors.tuner.button.border,
+  },
+  optionText: { color: colors.text.primary, fontSize: 24, fontWeight: "500" },
 });
 
-export default NotesScreen;
+export default ChordsScreen;

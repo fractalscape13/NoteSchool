@@ -26,6 +26,15 @@ const TabLayout = () => {
       <Tabs.Screen
         name="index"
         options={{
+          title: "Chords",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="music" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="notes"
+        options={{
           title: "Notes",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="random" size={28} color={color} />

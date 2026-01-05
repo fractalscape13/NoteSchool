@@ -1,4 +1,4 @@
-package com.josephwangemann.NoteSchool
+package com.app.noteschool
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

@@ -1,4 +1,4 @@
-package com.josephwangemann.NoteSchool
+package com.app.noteschool
 
 import android.app.Application
 import android.content.res.Configuration
