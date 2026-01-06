@@ -28,7 +28,7 @@
         <key>CFBundleURLSchemes</key>
         <array>
           <string>noteschool</string>
-          <string>com.app.noteschool</string>
+          <string>com.chordscalereference.app</string>
         </array>
       </dict>
     </array>

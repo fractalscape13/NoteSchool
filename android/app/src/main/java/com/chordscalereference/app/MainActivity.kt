@@ -1,4 +1,4 @@
-package com.app.noteschool
+package com.chordscalereference.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build
