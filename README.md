@@ -1,23 +1,25 @@
-# NoteSchool 🎸
+# Chord & Scale Reference 🎸
 
-A minimalist music reference tool
+A minimalist music theory reference tool
 
 ## Features
 
-- Random note generator for memorizing notes on the fretborad
+- Scale & Chord charts for Key
+- Random note generator for memorizing notes on the fretboard
 - Pitch reference for tuning
 
 ## Quick Start
 
 ```bash
-npm install
-npx expo start
+bun install
+bun run ios
+bun run android
 ```
 
 ## Tech Stack
 
-- Expo
 - React Native
+- Expo
 - TypeScript
 
 ## Contributing
