@@ -1,71 +1,64 @@
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  createNativeBottomTabNavigator,
+  NativeBottomTabNavigationEventMap,
+  NativeBottomTabNavigationOptions,
+} from "@bottom-tabs/react-navigation";
+import { ParamListBase, TabNavigationState } from "@react-navigation/native";
+import { withLayoutContext } from "expo-router";
+import type { SFSymbol } from "sf-symbols-typescript";
 import { colors } from "../../constants/theme";
 
+const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
+
+const Tabs = withLayoutContext<
+  NativeBottomTabNavigationOptions,
+  typeof BottomTabNavigator,
+  TabNavigationState<ParamListBase>,
+  NativeBottomTabNavigationEventMap
+>(BottomTabNavigator);
+
 const TabLayout = () => {
-  const insets = useSafeAreaInsets();
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.text.secondary,
-        tabBarStyle: {
-          borderTopWidth: 0.5,
-          borderTopColor: colors.primary,
-          paddingBottom: insets.bottom,
-          backgroundColor: colors.background,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          marginTop: 4,
-        },
-        headerShown: false,
-      }}
+      tabBarStyle={{ backgroundColor: colors.background }}
+      tabLabelStyle={{ fontSize: 12 }}
+      screenOptions={{ tabBarActiveTintColor: colors.primary }}
     >
       <Tabs.Screen
         name="chords"
         options={{
           title: "Chords",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="music" size={28} color={color} />
-          ),
+          tabBarIcon: () => ({ sfSymbol: "pianokeys" satisfies SFSymbol }),
         }}
       />
       <Tabs.Screen
         name="scales"
         options={{
           title: "Scales",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="list" size={28} color={color} />
-          ),
+          tabBarIcon: () => ({ sfSymbol: "list.bullet" satisfies SFSymbol }),
         }}
       />
       <Tabs.Screen
         name="index"
         options={{
           title: "Mixed",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="th" size={28} color={color} />
-          ),
+          tabBarIcon: () => ({
+            sfSymbol: "square.grid.2x2" satisfies SFSymbol,
+          }),
         }}
       />
       <Tabs.Screen
         name="notes"
         options={{
           title: "Notes",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="random" size={28} color={color} />
-          ),
+          tabBarIcon: () => ({ sfSymbol: "music.note" satisfies SFSymbol }),
         }}
       />
       <Tabs.Screen
         name="pitches"
         options={{
           title: "Pitches",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="pitchfork" size={28} color={color} />
-          ),
+          tabBarIcon: () => ({ sfSymbol: "tuningfork" satisfies SFSymbol }),
         }}
       />
     </Tabs>
