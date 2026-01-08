@@ -1,67 +1,34 @@
-import {
-  createNativeBottomTabNavigator,
-  NativeBottomTabNavigationEventMap,
-  NativeBottomTabNavigationOptions,
-} from "@bottom-tabs/react-navigation";
-import { ParamListBase, TabNavigationState } from "@react-navigation/native";
-import { withLayoutContext } from "expo-router";
-import type { SFSymbol } from "sf-symbols-typescript";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 import { colors } from "../../constants/theme";
-
-const BottomTabNavigator = createNativeBottomTabNavigator().Navigator;
-
-const Tabs = withLayoutContext<
-  NativeBottomTabNavigationOptions,
-  typeof BottomTabNavigator,
-  TabNavigationState<ParamListBase>,
-  NativeBottomTabNavigationEventMap
->(BottomTabNavigator);
-
 const TabLayout = () => {
   return (
-    <Tabs
-      tabBarStyle={{ backgroundColor: colors.background }}
-      tabLabelStyle={{ fontSize: 12 }}
-      screenOptions={{ tabBarActiveTintColor: colors.primary }}
+    <NativeTabs
+      backgroundColor={colors.background}
+      labelStyle={{ fontSize: 12 }}
+      minimizeBehavior="automatic"
+      tintColor={colors.primary}
     >
-      <Tabs.Screen
-        name="chords"
-        options={{
-          title: "Chords",
-          tabBarIcon: () => ({ sfSymbol: "pianokeys" satisfies SFSymbol }),
-        }}
-      />
-      <Tabs.Screen
-        name="scales"
-        options={{
-          title: "Scales",
-          tabBarIcon: () => ({ sfSymbol: "list.bullet" satisfies SFSymbol }),
-        }}
-      />
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Mixed",
-          tabBarIcon: () => ({
-            sfSymbol: "square.grid.2x2" satisfies SFSymbol,
-          }),
-        }}
-      />
-      <Tabs.Screen
-        name="notes"
-        options={{
-          title: "Notes",
-          tabBarIcon: () => ({ sfSymbol: "music.note" satisfies SFSymbol }),
-        }}
-      />
-      <Tabs.Screen
-        name="pitches"
-        options={{
-          title: "Pitches",
-          tabBarIcon: () => ({ sfSymbol: "tuningfork" satisfies SFSymbol }),
-        }}
-      />
-    </Tabs>
+      <NativeTabs.Trigger name="chords">
+        <Icon sf="pianokeys" />
+        <Label>Chords</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="scales">
+        <Icon sf="list.bullet" />
+        <Label>Scales</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="index">
+        <Icon sf="square.grid.2x2" />
+        <Label>Mixed</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="notes">
+        <Icon sf="music.note" />
+        <Label>Notes</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="pitches">
+        <Icon sf="tuningfork" />
+        <Label>Pitches</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 };
 

@@ -1,7 +1,7 @@
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import { useCallback, useEffect, useRef } from "react";
+import { useBottomTabBarHeight } from "react-native-bottom-tabs";
 import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
@@ -16,8 +16,6 @@ const PitchesScreen = () => {
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
   const tabBarHeight = useBottomTabBarHeight();
-  const availableHeight = windowHeight - insets.top - insets.bottom - tabBarHeight - 60;
-  const buttonHeight = Math.max(availableHeight / 6, 90);
   const pitchItems: ReadonlyArray<PitchItem> = keyOptions.flatMap((o): PitchItem[] => {
     const matchingNote = notes.find((n) => n.name === o.label || n.altName === o.label);
     if (!matchingNote) return [];
