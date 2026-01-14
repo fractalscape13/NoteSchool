@@ -67,7 +67,7 @@ const ScalesScreen = () => {
       bounces={false}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingTop: insets.top },
+        { paddingTop: insets.top, paddingBottom: insets.bottom + 20 },
       ]}
     >
       <View style={styles.header}>
@@ -158,7 +158,7 @@ const ScalesScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  contentContainer: { paddingBottom: 12 },
+  contentContainer: { flexGrow: 1 },
   header: { paddingHorizontal: 20, paddingTop: 12, gap: 16 },
   table: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
   tableBody: { gap: 10 },

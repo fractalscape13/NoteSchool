@@ -1,19 +1,13 @@
 import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
-import { colors } from "../../constants/theme";
 const TabLayout = () => {
   return (
-    <NativeTabs
-      backgroundColor={colors.background}
-      labelStyle={{ fontSize: 12 }}
-      minimizeBehavior="automatic"
-      tintColor={colors.primary}
-    >
+    <NativeTabs>
       <NativeTabs.Trigger name="chords">
         <Icon sf="pianokeys" />
         <Label>Chords</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="scales">
-        <Icon sf="list.bullet" />
+        <Icon sf="list.bullet"/>
         <Label>Scales</Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="index">

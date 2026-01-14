@@ -39,13 +39,7 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      ["expo-web-browser"],
-      ["react-native-bottom-tabs"],
-      ["expo-build-properties", {
-        "ios": {
-          "useFrameworks": "static"
-        }
-      }]
+      ["expo-web-browser"]
     ],
     "experiments": {
       "typedRoutes": true

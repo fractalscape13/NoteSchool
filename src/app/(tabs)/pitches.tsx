@@ -1,8 +1,7 @@
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import { useCallback, useEffect, useRef } from "react";
-import { useBottomTabBarHeight } from "react-native-bottom-tabs";
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../constants/theme";
 import { keyOptions } from "../../utils/keys";
@@ -15,8 +14,8 @@ const PitchesScreen = () => {
   const soundRef = useRef<Audio.Sound | null>(null);
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
-  const tabBarHeight = useBottomTabBarHeight();
-  const pitchItems: ReadonlyArray<PitchItem> = keyOptions.flatMap((o): PitchItem[] => {
+  const tabBarHeight = Platform.OS === 'ios' ? 49 : 56;
+  const pitchItems: readonly PitchItem[] = keyOptions.flatMap((o): PitchItem[] => {
     const matchingNote = notes.find((n) => n.name === o.label || n.altName === o.label);
     if (!matchingNote) return [];
     return [{ value: o.value, label: o.label, audioFile: matchingNote.audioFile }];

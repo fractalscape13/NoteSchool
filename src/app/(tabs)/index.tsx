@@ -53,7 +53,7 @@ const MixedScreen = () => {
   const selector = useMemo(() => {
     const isKeySelector = openSelector === "key";
     const isTypeSelector = openSelector === "type";
-    const options: ReadonlyArray<SelectorOption<string>> = isKeySelector ? keyOptions : keyTypeOptions;
+    const options: readonly SelectorOption<string>[] = isKeySelector ? keyOptions : keyTypeOptions;
     const selectedValue = isKeySelector ? key : keyType;
     return { isKeySelector, isTypeSelector, options, selectedValue };
   }, [key, keyType, openSelector]);
@@ -87,7 +87,7 @@ const MixedScreen = () => {
       bounces={false}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingTop: insets.top, paddingBottom: insets.bottom },
+        { paddingTop: insets.top, paddingBottom: insets.bottom + 20 },
       ]}
     >
       <View style={styles.header}>

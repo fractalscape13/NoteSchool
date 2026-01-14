@@ -41,7 +41,7 @@ const ChordsScreen = () => {
   const selector = useMemo(() => {
     const isKeySelector = openSelector === "key";
     const isTypeSelector = openSelector === "type";
-    const options: ReadonlyArray<SelectorOption<string>> = isKeySelector
+    const options: readonly SelectorOption<string>[] = isKeySelector
       ? keyOptions
       : keyTypeOptions;
     const selectedValue = isKeySelector ? key : keyType;
@@ -67,7 +67,7 @@ const ChordsScreen = () => {
       bounces={false}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingTop: insets.top },
+        { paddingTop: insets.top, paddingBottom: insets.bottom + 120 },
       ]}
     >
       <View style={styles.header}>
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  contentContainer: {  paddingBottom: 12 },
+  contentContainer: { flexGrow: 1 },
   header: { paddingHorizontal: 20, paddingTop: 12, gap: 16 },
   table: { paddingHorizontal: 20, paddingTop: 16, gap: 10 },
   tableHeaderRow: { flexDirection: "row", gap: 10 },
