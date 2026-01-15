@@ -39,7 +39,15 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      ["expo-web-browser"]
+      ["expo-web-browser"],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 33
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

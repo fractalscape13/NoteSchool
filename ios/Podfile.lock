@@ -150,6 +150,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - opencv-rne (4.11.0)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -1949,6 +1950,35 @@ PODS:
     - SocketRocket
     - SwiftUIIntrospect (~> 1.0)
     - Yoga
+  - react-native-executorch (0.6.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - opencv-rne (~> 4.11.0)
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - react-native-mmkv (3.3.3):
     - boost
     - DoubleConversion
@@ -2942,6 +2972,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - react-native-bottom-tabs (from `../node_modules/react-native-bottom-tabs`)
+  - react-native-executorch (from `../node_modules/react-native-executorch`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -2987,6 +3018,7 @@ SPEC REPOS:
     - libavif
     - libdav1d
     - libwebp
+    - opencv-rne
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
@@ -3114,6 +3146,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-bottom-tabs:
     :path: "../node_modules/react-native-bottom-tabs"
+  react-native-executorch:
+    :path: "../node_modules/react-native-executorch"
   react-native-mmkv:
     :path: "../node_modules/react-native-mmkv"
   react-native-safe-area-context:
@@ -3220,6 +3254,7 @@ SPEC CHECKSUMS:
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   LiquidGlass: 802acabc46218be8873b3e10023a4a8f372ab6ba
+  opencv-rne: 2305807573b6e29c8c87e3416ab096d09047a7a0
   RCT-Folly: 59ec0ac1f2f39672a0c6e6cecdd39383b764646f
   RCTDeprecation: 5eb1d2eeff5fb91151e8a8eef45b6c7658b6c897
   RCTRequired: cebcf9442fc296c9b89ac791dfd463021d9f6f23
@@ -3254,6 +3289,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 4649384414066eb77e30a3124dbb48732a3aa173
   React-microtasksnativemodule: e39f94cc96d61b8174a5cfb2d5862a73fa8c0d35
   react-native-bottom-tabs: a01cf1e2537c2fdeb6adcea1eb6b1add033ff0dd
+  react-native-executorch: 319beca8c61a40c6de09013750c5d3778205d4c5
   react-native-mmkv: c70c58437c0f5e5fe6992f1de1e350dcdd236332
   react-native-safe-area-context: fea29ae0275beaa22f72d0a8be1eb0ab09c3feae
   react-native-webview: 089e3d3bfeb754dff1e5920e6060e615757957f8

@@ -45,7 +45,7 @@ const ScalesScreen = () => {
   const selector = useMemo(() => {
     const isKeySelector = openSelector === "key";
     const isTypeSelector = openSelector === "type";
-    const options: ReadonlyArray<SelectorOption<string>> = isKeySelector
+    const options: readonly SelectorOption<string>[] = isKeySelector
       ? keyOptions
       : keyTypeOptions;
     const selectedValue = isKeySelector ? key : keyType;
