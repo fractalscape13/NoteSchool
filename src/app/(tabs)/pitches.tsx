@@ -1,4 +1,3 @@
-import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
 import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from "expo-av";
 import { useCallback, useEffect, useRef } from "react";
 import { Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
@@ -56,30 +55,43 @@ const PitchesScreen = () => {
     }
   }, []);
 
-  const renderItem = ({ item }: LegendListRenderItemProps<PitchItem>) => (
-    <TouchableOpacity
-      style={[styles.button, { height: (windowHeight - insets.top - insets.bottom - tabBarHeight - 50) / 6 }]}
-      onPress={() => playNote(item.audioFile)}
-    >
-      <Text style={styles.buttonText}>
-        {item.label}
-      </Text>
-    </TouchableOpacity>
-  );
+  const containerTopPadding = insets.top;
+  const containerBottomPadding = insets.bottom + tabBarHeight;
+  const buttonContainerPadding = 10;
+  const gapSize = 10;
+  const numRows = 6;
+  const totalGaps = (numRows - 1) * gapSize;
+  const availableHeight = windowHeight - containerTopPadding - containerBottomPadding;
+  const buttonHeight = Math.max(0, (availableHeight - (buttonContainerPadding * 2) - totalGaps) / numRows);
+  const buttonContainerMaxHeight = (buttonHeight * numRows) + (buttonContainerPadding * 2) + totalGaps;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <LegendList
-        data={pitchItems}
-        renderItem={renderItem}
-        keyExtractor={(item: PitchItem) => item.value}
-        numColumns={2}
-        contentContainerStyle={styles.buttonContainer}
-        columnWrapperStyle={styles.columnWrapper}
-        scrollEnabled
-        showsVerticalScrollIndicator={false}
-        bounces={false}
-      />
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom + tabBarHeight }]}>
+      <View style={[styles.buttonContainer, { maxHeight: buttonContainerMaxHeight }]}>
+        {pitchItems.map((item, index) => {
+          if (index % 2 === 0) {
+            return (
+              <View key={`row-${index / 2}`} style={styles.columnWrapper}>
+                <TouchableOpacity
+                  style={[styles.button, { height: buttonHeight }]}
+                  onPress={() => playNote(item.audioFile)}
+                >
+                  <Text style={styles.buttonText}>{item.label}</Text>
+                </TouchableOpacity>
+                {pitchItems[index + 1] && (
+                  <TouchableOpacity
+                    style={[styles.button, { height: buttonHeight }]}
+                    onPress={() => playNote(pitchItems[index + 1].audioFile)}
+                  >
+                    <Text style={styles.buttonText}>{pitchItems[index + 1].label}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            );
+          }
+          return null;
+        })}
+      </View>
     </View>
   );
 };
@@ -88,16 +100,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+    overflow: 'hidden',
   },
   buttonContainer: {
     padding: 10,
-    flexGrow: 1,
-    gap: 10,
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
     gap: 10,
     flex: 1,
+  },
+  columnWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
   },
   button: {
     backgroundColor: colors.tuner.button.background,

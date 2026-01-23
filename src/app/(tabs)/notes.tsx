@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { storage, STORAGE_KEYS } from "../../constants/storage";
 import { colors } from "../../constants/theme";
@@ -9,6 +9,7 @@ const NotesScreen = () => {
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const noteFontSize = height < 700 ? 250 : 280;
+  const tabBarHeight = Platform.OS === "ios" ? 49 : 56;
   const [includeAccidentals, setIncludeAccidentals] = useState<boolean>(() => {
     const savedIncludeAccidentals = storage.getBoolean(STORAGE_KEYS.INCLUDE_ACCIDENTALS);
     return savedIncludeAccidentals ?? false;
@@ -107,7 +108,7 @@ const NotesScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+    <View style={styles.container}>
       <View style={styles.noteContainer}>
         <TouchableOpacity
           onPress={() => {
@@ -128,7 +129,7 @@ const NotesScreen = () => {
         </TouchableOpacity>
         <View style={styles.dotContainer}>{renderDotIndicators()}</View>
       </View>
-      <View>
+      <View style={[styles.bottomSection, { paddingBottom: insets.bottom + tabBarHeight }]}>
         <View style={styles.controls}>
           <View style={styles.incrementerContainer}>
             <TouchableOpacity
@@ -199,6 +200,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  bottomSection: {
+    paddingTop: 20,
   },
   noteTouchable: {
     position: "absolute",
