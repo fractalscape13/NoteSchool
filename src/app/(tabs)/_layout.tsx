@@ -14,10 +14,6 @@ const TabLayout = () => {
         <Icon sf="tuningfork" />
         <Label>Pitches</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="ai">
-        <Icon sf="sparkle" />
-        <Label>AI</Label>
-      </NativeTabs.Trigger>
     </NativeTabs>
   );
 };
