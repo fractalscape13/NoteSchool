@@ -53,7 +53,7 @@ const MixedScreen = () => {
   const selector = useMemo(() => {
     const isKeySelector = openSelector === "key";
     const isTypeSelector = openSelector === "type";
-    const options: ReadonlyArray<SelectorOption<string>> = isKeySelector ? keyOptions : keyTypeOptions;
+    const options: readonly SelectorOption<string>[] = isKeySelector ? keyOptions : keyTypeOptions;
     const selectedValue = isKeySelector ? key : keyType;
     return { isKeySelector, isTypeSelector, options, selectedValue };
   }, [key, keyType, openSelector]);
@@ -87,7 +87,7 @@ const MixedScreen = () => {
       bounces={false}
       contentContainerStyle={[
         styles.contentContainer,
-        { paddingTop: insets.top, paddingBottom: insets.bottom },
+        { paddingBottom: insets.bottom + 20 },
       ]}
     >
       <View style={styles.header}>
@@ -128,10 +128,10 @@ const MixedScreen = () => {
       <View style={styles.body}>
         <View style={styles.section}>
           <View style={styles.tableHeaderRow}>
-            <View style={styles.tableHeaderCell}>
+            <View style={[styles.tableHeaderCell, styles.chordHeaderCell]}>
               <Text style={styles.tableHeaderText}>Chord</Text>
             </View>
-            <View style={styles.tableHeaderCell}>
+            <View style={[styles.tableHeaderCell, styles.notesHeaderCell]}>
               <Text style={styles.tableHeaderText}>Notes</Text>
             </View>
           </View>
@@ -146,7 +146,7 @@ const MixedScreen = () => {
                   style={styles.tableDataRow}
                   onPress={() => setSelectedChordIndex(index)}
                 >
-                  <View style={[styles.tableDataCell, chordSelected && styles.tableDataCellSelected]}>
+                  <View style={[styles.tableDataCell, styles.chordDataCell, chordSelected && styles.tableDataCellSelected]}>
                     <View style={styles.chordCellRow}>
                       <Text style={styles.degreeText}>{item.degree}</Text>
                       <Text
@@ -161,7 +161,7 @@ const MixedScreen = () => {
                       </Text>
                     </View>
                   </View>
-                  <View style={[styles.tableDataCell, noteSelected && styles.tableDataCellSelected]}>
+                  <View style={[styles.tableDataCell, styles.notesDataCell, noteSelected && styles.tableDataCellSelected]}>
                     <Text
                       style={[
                         styles.noteCellText,
@@ -196,11 +196,11 @@ const MixedScreen = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   contentContainer: { flexGrow: 1 },
-  header: { paddingHorizontal: 20, paddingTop: 12, gap: 16 },
+  header: { paddingHorizontal: 12, gap: 12 },
   selectors: { gap: 10 },
   selectorRow: { flexDirection: "row", gap: 10 },
   selectorColumn: { flex: 1, gap: 10 },
-  selectorLabel: { color: colors.text.secondary, fontSize: 14, fontWeight: "600" },
+  selectorLabel: { color: colors.text.secondary, fontSize: 16, fontWeight: "600" },
   selectorButton: {
     backgroundColor: colors.tuner.button.background,
     borderRadius: 12,
@@ -214,19 +214,19 @@ const styles = StyleSheet.create({
   },
   selectorValue: {
     color: colors.text.primary,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "700",
     flexShrink: 1,
     paddingRight: 8,
   },
   checkboxRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6 },
   checkbox: { width: 26, alignItems: "center", justifyContent: "center" },
-  checkboxLabel: { color: colors.text.primary, fontSize: 16, fontWeight: "700" },
+  checkboxLabel: { color: colors.text.primary, fontSize: 18, fontWeight: "700" },
   body: { paddingHorizontal: 20, paddingTop: 16, gap: 16 },
   section: { gap: 10 },
   tableHeaderRow: { flexDirection: "row", gap: 10 },
   tableHeaderCell: { flex: 1, alignItems: "flex-start", justifyContent: "center", paddingVertical: 6 },
-  tableHeaderText: { color: colors.text.secondary, fontSize: 14, fontWeight: "800", textAlign: "left" },
+  tableHeaderText: { color: colors.text.secondary, fontSize: 16, fontWeight: "800", textAlign: "left" },
   tableDataRow: { flexDirection: "row", gap: 10, marginBottom: 10 },
   tableDataCell: {
     flex: 1,
@@ -238,10 +238,14 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   tableDataCellSelected: { borderColor: colors.primary, backgroundColor: colors.tuner.button.background },
+  chordHeaderCell: { flex: 2 },
+  notesHeaderCell: { flex: 1 },
+  chordDataCell: { flex: 2 },
+  notesDataCell: { flex: 1 },
   chordCellRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-  degreeText: { color: colors.text.secondary, fontSize: 13, fontWeight: "900", letterSpacing: 0.2 },
-  chordNameText: { fontSize: 17, fontWeight: "800", textAlign: "left", flexShrink: 1 },
-  noteCellText: { fontSize: 18, fontWeight: "800", textAlign: "left" },
+  degreeText: { color: colors.text.secondary, fontSize: 20, fontWeight: "900", letterSpacing: 0.2 },
+  chordNameText: { fontSize: 30, fontWeight: "800", textAlign: "left", flexShrink: 1 },
+  noteCellText: { fontSize: 30, fontWeight: "800", textAlign: "left" },
   textSelected: { color: colors.text.primary },
   textUnselected: { color: "rgba(241,245,249,0.78)" },
 });

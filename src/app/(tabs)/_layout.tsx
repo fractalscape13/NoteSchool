@@ -1,74 +1,20 @@
-import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { colors } from "../../constants/theme";
-
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 const TabLayout = () => {
-  const insets = useSafeAreaInsets();
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.text.secondary,
-        tabBarStyle: {
-          borderTopWidth: 0.5,
-          borderTopColor: colors.primary,
-          paddingBottom: insets.bottom,
-          backgroundColor: colors.background,
-        },
-        tabBarLabelStyle: {
-          fontSize: 12,
-          marginTop: 4,
-        },
-        headerShown: false,
-      }}
-    >
-      <Tabs.Screen
-        name="chords"
-        options={{
-          title: "Chords",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="music" size={28} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="scales"
-        options={{
-          title: "Scales",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="list" size={28} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Mixed",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="th" size={28} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="notes"
-        options={{
-          title: "Notes",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="random" size={28} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="pitches"
-        options={{
-          title: "Pitches",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="pitchfork" size={28} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Icon sf="square.grid.2x2" />
+        <Label>Chords</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="notes">
+        <Icon sf="music.note" />
+        <Label>Notes</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="pitches">
+        <Icon sf="tuningfork" />
+        <Label>Pitches</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 };
 
