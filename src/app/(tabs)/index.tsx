@@ -1,6 +1,6 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { OptionsModal } from "../../components/OptionsModal";
 import { storage, STORAGE_KEYS } from "../../constants/storage";
@@ -82,14 +82,7 @@ const MixedScreen = () => {
   }, [selectedChordIndex]);
 
   return (
-    <ScrollView
-      style={styles.container}
-      bounces={false}
-      contentContainerStyle={[
-        styles.contentContainer,
-        { paddingBottom: insets.bottom + 20 },
-      ]}
-    >
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
       <View style={styles.header}>
         <View style={styles.selectors}>
           <View style={styles.selectorRow}>
@@ -189,13 +182,12 @@ const MixedScreen = () => {
           closeSelector();
         }}
       />
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  contentContainer: { flexGrow: 1 },
   header: { paddingHorizontal: 12, gap: 12 },
   selectors: { gap: 10 },
   selectorRow: { flexDirection: "row", gap: 10 },
@@ -222,8 +214,8 @@ const styles = StyleSheet.create({
   checkboxRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 6 },
   checkbox: { width: 26, alignItems: "center", justifyContent: "center" },
   checkboxLabel: { color: colors.text.primary, fontSize: 18, fontWeight: "700" },
-  body: { paddingHorizontal: 20, paddingTop: 16, gap: 16 },
-  section: { gap: 10 },
+  body: { flex: 1, paddingHorizontal: 20, paddingTop: 16, gap: 16 },
+  section: { flex: 1, gap: 10 },
   tableHeaderRow: { flexDirection: "row", gap: 10 },
   tableHeaderCell: { flex: 1, alignItems: "flex-start", justifyContent: "center", paddingVertical: 6 },
   tableHeaderText: { color: colors.text.secondary, fontSize: 16, fontWeight: "800", textAlign: "left" },
